@@ -1,5 +1,6 @@
 package com.lrsilva.projetospring;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,20 @@ import com.lrsilva.projetospring.domain.Address;
 import com.lrsilva.projetospring.domain.Category;
 import com.lrsilva.projetospring.domain.City;
 import com.lrsilva.projetospring.domain.Client;
+import com.lrsilva.projetospring.domain.OrderT;
+import com.lrsilva.projetospring.domain.Payment;
+import com.lrsilva.projetospring.domain.PaymentWithCard;
+import com.lrsilva.projetospring.domain.PaymentWithTicket;
 import com.lrsilva.projetospring.domain.Product;
 import com.lrsilva.projetospring.domain.State;
 import com.lrsilva.projetospring.domain.enums.ClientType;
+import com.lrsilva.projetospring.domain.enums.PaymentState;
 import com.lrsilva.projetospring.repositories.AddressRepository;
 import com.lrsilva.projetospring.repositories.CategoryRepository;
 import com.lrsilva.projetospring.repositories.CityRepository;
 import com.lrsilva.projetospring.repositories.ClientRepository;
+import com.lrsilva.projetospring.repositories.OrderRepository;
+import com.lrsilva.projetospring.repositories.PaymentRepository;
 import com.lrsilva.projetospring.repositories.ProductRepository;
 import com.lrsilva.projetospring.repositories.StateRepository;
 
@@ -36,6 +44,10 @@ public class ProjetoSpringApplication implements CommandLineRunner {
 	private ClientRepository clientRepository;
 	@Autowired
 	private AddressRepository addressRepository;
+	@Autowired
+	private OrderRepository orderRepository;
+	@Autowired
+	private PaymentRepository paymentRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProjetoSpringApplication.class, args);
@@ -84,5 +96,23 @@ public class ProjetoSpringApplication implements CommandLineRunner {
 
 		clientRepository.saveAll(Arrays.asList(cli1));
 		addressRepository.saveAll(Arrays.asList(ad1, ad2));
+
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+		OrderT or1 = new OrderT(null, sdf.parse("30/09/2017 12:44"), cli1, ad1);
+		OrderT or2 = new OrderT(null, sdf.parse("10/10/2017 19:44"), cli1, ad2);
+
+		Payment pay1 = new PaymentWithCard(null, PaymentState.SETTLED, or1, 6);
+
+		or1.setPayment(pay1);
+
+		Payment pay2 = new PaymentWithTicket(null, PaymentState.PENDING, or2, sdf.parse("20/10/2017 00:00"), null);
+
+		or2.setPayment(pay2);
+
+		cli1.getOrders().addAll(Arrays.asList(or1, or2));
+
+		orderRepository.saveAll(Arrays.asList(or1, or2));
+		paymentRepository.saveAll(Arrays.asList(pay1, pay2));
 	}
 }
