@@ -4,12 +4,15 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lrsilva.projetospring.domain.enums.PaymentState;
 
 @Entity
 public class PaymentWithTicket extends Payment {
 	private static final long serialVersionUID = 1L;
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm")
 	private Date dueDate;
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm")
 	private Date paymentDate;
 
 	public PaymentWithTicket() {
