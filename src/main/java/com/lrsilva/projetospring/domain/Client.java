@@ -37,7 +37,7 @@ public class Client implements Serializable {
 	@ElementCollection
 	@CollectionTable(name = "TELEPHONE")
 	private Set<String> telephones = new HashSet<>();
-
+	@JsonManagedReference
 	@OneToMany(mappedBy = "client")
 	private List<OrderT> orders = new ArrayList<>();
 

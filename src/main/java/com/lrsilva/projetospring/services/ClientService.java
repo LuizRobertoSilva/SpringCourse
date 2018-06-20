@@ -1,5 +1,6 @@
 package com.lrsilva.projetospring.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,13 @@ public class ClientService {
 
 	public Client find(Integer id) {
 		Optional<Client> obj = repo.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type:" + Client.class.getName()));
+		return obj.orElseThrow(
+				() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type:" + Client.class.getName()));
+	}
+
+	public List<Client> findAll() {
+		List<Client> obj = repo.findAll();
+		return obj;
 	}
 
 }

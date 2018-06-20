@@ -12,6 +12,7 @@ import com.lrsilva.projetospring.domain.Address;
 import com.lrsilva.projetospring.domain.Category;
 import com.lrsilva.projetospring.domain.City;
 import com.lrsilva.projetospring.domain.Client;
+import com.lrsilva.projetospring.domain.OrderItem;
 import com.lrsilva.projetospring.domain.OrderT;
 import com.lrsilva.projetospring.domain.Payment;
 import com.lrsilva.projetospring.domain.PaymentWithCard;
@@ -24,6 +25,7 @@ import com.lrsilva.projetospring.repositories.AddressRepository;
 import com.lrsilva.projetospring.repositories.CategoryRepository;
 import com.lrsilva.projetospring.repositories.CityRepository;
 import com.lrsilva.projetospring.repositories.ClientRepository;
+import com.lrsilva.projetospring.repositories.OrderItemRepository;
 import com.lrsilva.projetospring.repositories.OrderRepository;
 import com.lrsilva.projetospring.repositories.PaymentRepository;
 import com.lrsilva.projetospring.repositories.ProductRepository;
@@ -48,6 +50,8 @@ public class ProjetoSpringApplication implements CommandLineRunner {
 	private OrderRepository orderRepository;
 	@Autowired
 	private PaymentRepository paymentRepository;
+	@Autowired
+	private OrderItemRepository orderItemRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProjetoSpringApplication.class, args);
@@ -114,5 +118,17 @@ public class ProjetoSpringApplication implements CommandLineRunner {
 
 		orderRepository.saveAll(Arrays.asList(or1, or2));
 		paymentRepository.saveAll(Arrays.asList(pay1, pay2));
+
+		OrderItem oi1 = new OrderItem(or1, p1, 0.00, 1, 2000.00);
+		OrderItem oi2 = new OrderItem(or1, p3, 0.00, 2, 80.00);
+		OrderItem oi3 = new OrderItem(or2, p2, 1000.00, 1, 800.00);
+
+		or1.getItems().addAll(Arrays.asList(oi1, oi2));
+		or2.getItems().addAll(Arrays.asList(oi3));
+
+		p1.getItems().addAll(Arrays.asList(oi1));
+		p2.getItems().addAll(Arrays.asList(oi3));
+		p3.getItems().addAll(Arrays.asList(oi2));
+		orderItemRepository.saveAll(Arrays.asList(oi1, oi2, oi3));
 	}
 }
