@@ -20,13 +20,13 @@ public class OrderResource {
 	private OrderService service;
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public ResponseEntity<?> find(@PathVariable Integer id) {
+	public ResponseEntity<OrderT> find(@PathVariable Integer id) {
 		OrderT obj = service.find(id);
 		return ResponseEntity.ok().body(obj);
 	}
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public ResponseEntity<?> find() {
+	public ResponseEntity<List<OrderT>> find() {
 		List<OrderT> obj = service.findAll();
 		return ResponseEntity.ok().body(obj);
 	}
