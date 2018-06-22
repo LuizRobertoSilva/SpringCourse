@@ -3,11 +3,19 @@ package com.lrsilva.projetospring.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.lrsilva.projetospring.domain.Client;
+import com.lrsilva.projetospring.domain.Client;
+import com.lrsilva.projetospring.dto.ClientDTO;
 import com.lrsilva.projetospring.repositories.ClientRepository;
+import com.lrsilva.projetospring.services.exceptions.DataIntegrityException;
 import com.lrsilva.projetospring.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -25,6 +33,40 @@ public class ClientService {
 	public List<Client> findAll() {
 		List<Client> obj = repo.findAll();
 		return obj;
+	}
+
+	public Page<Client> findByPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		return repo.findAll(pageRequest);
+	}
+
+	public Client insert(Client obj) {
+		obj.setId(null);
+		return repo.save(obj);
+	}
+
+	public Client update(Client obj) {
+		Client newObj = find(obj.getId());
+		updateData(newObj, obj);
+		return repo.save(obj);
+	}
+
+	public void delete(Integer id) {
+		find(id);
+		try {
+			repo.deleteById(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityException("It's not possible delete a client with entities associate");
+		}
+	}
+
+	public Client fromDTO(ClientDTO objDTO) {
+		return new Client(objDTO.getId(), objDTO.getName(), objDTO.getEmail(), null, null);
+	}
+
+	private void updateData(Client newObj, Client obj) {
+		newObj.setName(obj.getName());
+		newObj.setEmail(obj.getName());
 	}
 
 }
