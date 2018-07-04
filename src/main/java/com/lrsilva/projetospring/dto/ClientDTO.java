@@ -8,9 +8,9 @@ import javax.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Length;
 
 import com.lrsilva.projetospring.domain.Client;
-import com.lrsilva.projetospring.services.validation.ClientInsert;
+import com.lrsilva.projetospring.services.validation.ClientUpdate;
 
-@ClientInsert
+@ClientUpdate
 public class ClientDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
