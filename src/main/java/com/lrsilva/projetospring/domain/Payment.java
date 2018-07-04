@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lrsilva.projetospring.domain.enums.PaymentState;
 
 @Entity
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Payment implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -33,7 +33,7 @@ public abstract class Payment implements Serializable {
 	public Payment(Integer id, PaymentState state, OrderT order) {
 		super();
 		this.id = id;
-		this.state = state.getId();
+		this.state = (state == null) ? null : state.getId();
 		this.order = order;
 	}
 

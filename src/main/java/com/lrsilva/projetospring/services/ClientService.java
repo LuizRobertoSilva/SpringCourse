@@ -1,19 +1,24 @@
 package com.lrsilva.projetospring.services;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.lrsilva.projetospring.domain.Address;
+import com.lrsilva.projetospring.domain.City;
 import com.lrsilva.projetospring.domain.Client;
-import com.lrsilva.projetospring.domain.Client;
+import com.lrsilva.projetospring.domain.enums.ClientType;
 import com.lrsilva.projetospring.dto.ClientDTO;
+import com.lrsilva.projetospring.dto.ClientNewDTO;
+import com.lrsilva.projetospring.repositories.AddressRepository;
 import com.lrsilva.projetospring.repositories.ClientRepository;
 import com.lrsilva.projetospring.services.exceptions.DataIntegrityException;
 import com.lrsilva.projetospring.services.exceptions.ObjectNotFoundException;
@@ -23,6 +28,8 @@ public class ClientService {
 
 	@Autowired
 	private ClientRepository repo;
+	@Autowired
+	private AddressRepository addressRepository;
 
 	public Client find(Integer id) {
 		Optional<Client> obj = repo.findById(id);
@@ -40,9 +47,12 @@ public class ClientService {
 		return repo.findAll(pageRequest);
 	}
 
+	@Transactional
 	public Client insert(Client obj) {
 		obj.setId(null);
-		return repo.save(obj);
+		obj = repo.save(obj);
+		addressRepository.saveAll(obj.getAddresses());
+		return obj;
 	}
 
 	public Client update(Client obj) {
@@ -62,6 +72,29 @@ public class ClientService {
 
 	public Client fromDTO(ClientDTO objDTO) {
 		return new Client(objDTO.getId(), objDTO.getName(), objDTO.getEmail(), null, null);
+	}
+
+	public Client fromDTO(ClientNewDTO objDTO) {
+		Client cli = new Client(null, objDTO.getName(), objDTO.getEmail(), objDTO.getCpfOrCnpj(),
+				ClientType.toEnum(objDTO.getType()));
+
+		City city = new City(objDTO.getCityId(), null, null);
+
+		Address ad = new Address(null, objDTO.getStreet(), objDTO.getNumber(), objDTO.getComplement(),
+				objDTO.getNeighbourhood(), objDTO.getZipCode(), cli, city);
+
+		cli.getAddresses().addAll(Arrays.asList(ad));
+
+		cli.getTelephones().add(objDTO.getTelphone1());
+		if (objDTO.getTelphone2() != null) {
+			cli.getTelephones().add(objDTO.getTelphone2());
+
+		}
+		if (objDTO.getTelphone3() != null) {
+			cli.getTelephones().add(objDTO.getTelphone3());
+		}
+
+		return cli;
 	}
 
 	private void updateData(Client newObj, Client obj) {

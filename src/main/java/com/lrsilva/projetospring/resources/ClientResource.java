@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.lrsilva.projetospring.domain.Client;
 import com.lrsilva.projetospring.dto.ClientDTO;
+import com.lrsilva.projetospring.dto.ClientNewDTO;
 import com.lrsilva.projetospring.services.ClientService;
 
 @RestController
@@ -54,7 +55,7 @@ public class ClientResource {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Void> insert(@Valid @RequestBody ClientDTO objDto) {
+	public ResponseEntity<Void> insert(@Valid @RequestBody ClientNewDTO objDto) {
 		Client obj = service.fromDTO(objDto);
 		obj = service.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
