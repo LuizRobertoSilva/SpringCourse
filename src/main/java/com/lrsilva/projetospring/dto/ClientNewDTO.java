@@ -2,12 +2,28 @@ package com.lrsilva.projetospring.dto;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+
+import org.hibernate.validator.constraints.Length;
+
+import com.lrsilva.projetospring.services.validation.ClientInsert;
+@ClientInsert
 public class ClientNewDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@NotEmpty(message = "Required field")
+	@Length(min = 5, message = "Length must be between 5 and 120 characters")
 	private String name;
+
+	@NotEmpty(message = "Required field")
+	@Email(message = "Invalid e-mail")
 	private String email;
+
+	@NotEmpty(message = "Required field")
 	private String cpfOrCnpj;
+
+	@NotEmpty(message = "Required field")
 	private Integer type;
 
 	private String street;
@@ -15,7 +31,7 @@ public class ClientNewDTO implements Serializable {
 	private String complement;
 	private String neighbourhood;
 	private String zipCode;
-
+	@NotEmpty(message = "Required field")
 	private String telphone1;
 	private String telphone2;
 	private String telphone3;
