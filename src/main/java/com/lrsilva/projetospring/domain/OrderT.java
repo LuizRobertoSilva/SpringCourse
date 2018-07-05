@@ -24,7 +24,7 @@ public class OrderT implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	@JsonFormat(pattern="dd/MM/yyyy HH:mm")
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	private Date instant;
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "order")
 	private Payment payment;
@@ -48,6 +48,14 @@ public class OrderT implements Serializable {
 		this.instant = instant;
 		this.client = client;
 		this.deliveryAddress = deliveryAddress;
+	}
+
+	public double getTotalValue() {
+		double sum = 0;
+		for (OrderItem oi : items) {
+			sum += oi.getSubTotal();
+		}
+		return sum;
 	}
 
 	public Integer getId() {
