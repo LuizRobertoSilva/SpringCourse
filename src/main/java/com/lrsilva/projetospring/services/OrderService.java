@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lrsilva.projetospring.domain.Client;
 import com.lrsilva.projetospring.domain.OrderItem;
 import com.lrsilva.projetospring.domain.OrderT;
 import com.lrsilva.projetospring.domain.PaymentWithTicket;
@@ -15,6 +19,8 @@ import com.lrsilva.projetospring.domain.enums.PaymentState;
 import com.lrsilva.projetospring.repositories.OrderItemRepository;
 import com.lrsilva.projetospring.repositories.OrderRepository;
 import com.lrsilva.projetospring.repositories.PaymentRepository;
+import com.lrsilva.projetospring.security.UserSS;
+import com.lrsilva.projetospring.services.exceptions.AuthorizationException;
 import com.lrsilva.projetospring.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -72,6 +78,16 @@ public class OrderService {
 
 		emailService.sendOrderConfirmationHtmlEmail(obj);
 		return obj;
+	}
+	
+	public Page<OrderT> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
+		UserSS user = UserService.authenticated();
+		if (user == null) {
+			throw new AuthorizationException("Access denied");
+		}
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		Client client =  clientService.find(user.getId());
+		return repo.findByClient(client, pageRequest);
 	}
 
 }

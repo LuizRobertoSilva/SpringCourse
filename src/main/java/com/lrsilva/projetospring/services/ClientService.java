@@ -17,10 +17,13 @@ import com.lrsilva.projetospring.domain.Address;
 import com.lrsilva.projetospring.domain.City;
 import com.lrsilva.projetospring.domain.Client;
 import com.lrsilva.projetospring.domain.enums.ClientType;
+import com.lrsilva.projetospring.domain.enums.Profile;
 import com.lrsilva.projetospring.dto.ClientDTO;
 import com.lrsilva.projetospring.dto.ClientNewDTO;
 import com.lrsilva.projetospring.repositories.AddressRepository;
 import com.lrsilva.projetospring.repositories.ClientRepository;
+import com.lrsilva.projetospring.security.UserSS;
+import com.lrsilva.projetospring.services.exceptions.AuthorizationException;
 import com.lrsilva.projetospring.services.exceptions.DataIntegrityException;
 import com.lrsilva.projetospring.services.exceptions.ObjectNotFoundException;
 
@@ -36,6 +39,12 @@ public class ClientService {
 	private BCryptPasswordEncoder be;
 
 	public Client find(Integer id) {
+
+		UserSS user = UserService.authenticated();
+		if (user == null || !user.hasRole(Profile.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("Access Denied");
+		}
+
 		Optional<Client> obj = repo.findById(id);
 		return obj.orElseThrow(
 				() -> new ObjectNotFoundException("Object not found! Id: " + id + ", Type:" + Client.class.getName()));
