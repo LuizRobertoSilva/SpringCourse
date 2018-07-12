@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,6 +21,7 @@ import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lrsilva.projetospring.domain.enums.ClientType;
+import com.lrsilva.projetospring.domain.enums.Profile;
 
 @Entity
 public class Client implements Serializable {
@@ -28,13 +32,14 @@ public class Client implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String name;
-	@Column(unique=true)
+	@Column(unique = true)
 	private String email;
 	private String cpfOrCnpj;
 	private Integer type;
+	@JsonIgnore
+	private String password;
 
-	
-	@OneToMany(mappedBy = "client", cascade=CascadeType.ALL)
+	@OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
 	private List<Address> addresses = new ArrayList<>();
 
 	@ElementCollection
@@ -44,16 +49,23 @@ public class Client implements Serializable {
 	@OneToMany(mappedBy = "client")
 	private List<OrderT> orders = new ArrayList<>();
 
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "PROFILES")
+	private Set<Integer> profiles = new HashSet<>();
+
 	public Client() {
+		addProfile(Profile.CLIENT);
 	}
 
-	public Client(Integer id, String name, String email, String cpfOrCnpj, ClientType type) {
+	public Client(Integer id, String name, String email, String cpfOrCnpj, ClientType type, String password) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.email = email;
 		this.cpfOrCnpj = cpfOrCnpj;
+		this.password = password;
 		this.type = (type == null) ? null : type.getId();
+		addProfile(Profile.CLIENT);
 	}
 
 	public Integer getId() {
@@ -70,6 +82,14 @@ public class Client implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Set<Profile> getProfile() {
+		return profiles.stream().map(x -> Profile.toEnum(x)).collect(Collectors.toSet());
+	}
+
+	public void addProfile(Profile profile) {
+		profiles.add(profile.getId());
 	}
 
 	public String getEmail() {
@@ -118,6 +138,14 @@ public class Client implements Serializable {
 
 	public void setOrders(List<OrderT> orders) {
 		this.orders = orders;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	@Override

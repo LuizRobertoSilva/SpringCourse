@@ -8,6 +8,7 @@ import javax.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Length;
 
 import com.lrsilva.projetospring.services.validation.ClientInsert;
+
 @ClientInsert
 public class ClientNewDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -19,6 +20,8 @@ public class ClientNewDTO implements Serializable {
 	@NotEmpty(message = "Required field")
 	@Email(message = "Invalid e-mail")
 	private String email;
+	@NotEmpty(message = "Required field")
+	private String password;
 
 	@NotEmpty(message = "Required field")
 	private String cpfOrCnpj;
@@ -143,6 +146,14 @@ public class ClientNewDTO implements Serializable {
 
 	public void setCityId(Integer cityId) {
 		this.cityId = cityId;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }
