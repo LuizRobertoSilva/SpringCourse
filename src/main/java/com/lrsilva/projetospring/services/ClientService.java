@@ -73,6 +73,18 @@ public class ClientService {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		return repo.findAll(pageRequest);
 	}
+	
+	public Client findByEmail(String email) {
+		UserSS user = UserService.authenticated();
+		if (user == null || !user.hasRole(Profile.ADMIN) && !email.equals(user.getUsername())) {
+			throw new AuthorizationException("Access Denied");
+		}
+		Client obj = find(user.getId());
+		if(obj == null) {
+			throw new ObjectNotFoundException("Object not found ID:" + user.getId());
+		}
+		return obj;
+	}
 
 	@Transactional
 	public Client insert(Client obj) {
