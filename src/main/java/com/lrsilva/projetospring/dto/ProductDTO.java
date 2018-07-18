@@ -2,11 +2,6 @@ package com.lrsilva.projetospring.dto;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotEmpty;
-
-import org.hibernate.validator.constraints.Length;
-
-import com.lrsilva.projetospring.domain.Category;
 import com.lrsilva.projetospring.domain.Product;
 
 public class ProductDTO implements Serializable {

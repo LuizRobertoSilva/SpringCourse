@@ -22,19 +22,23 @@ import com.lrsilva.projetospring.domain.Category;
 import com.lrsilva.projetospring.dto.CategoryDTO;
 import com.lrsilva.projetospring.services.CategoryService;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping(value = "/categories")
 public class CategoryResource {
 
 	@Autowired
 	private CategoryService service;
-
+	@ApiOperation(value="Buscar por categoria por id")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Category> find(@PathVariable Integer id) {
 		Category obj = service.find(id);
 		return ResponseEntity.ok().body(obj);
 	}
-
+	@ApiOperation(value="Buscar todas as categorias")
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<CategoryDTO>> findAll() {
 		List<Category> list = service.findAll();
@@ -53,7 +57,7 @@ public class CategoryResource {
 
 		return ResponseEntity.ok().body(listDTO);
 	}
-
+	@ApiOperation(value="Insere categoria")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Void> insert(@Valid @RequestBody CategoryDTO objDto) {
@@ -62,7 +66,7 @@ public class CategoryResource {
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
-
+	@ApiOperation(value="Atualiza categoria")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Void> update(@Valid @RequestBody CategoryDTO objDto, @PathVariable Integer id) {
@@ -71,7 +75,11 @@ public class CategoryResource {
 		obj = service.update(obj);
 		return ResponseEntity.noContent().build();
 	}
-
+	
+	@ApiResponses(value = {
+			@ApiResponse(code = 400, message = "Não é possível excluir uma categoria que possui produtos"),
+			@ApiResponse(code = 404, message = "Código inexistente") })
+	@ApiOperation(value="Deleta categoria")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
