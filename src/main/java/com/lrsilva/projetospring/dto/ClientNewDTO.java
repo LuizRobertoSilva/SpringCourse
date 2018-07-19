@@ -26,7 +26,6 @@ public class ClientNewDTO implements Serializable {
 	@NotEmpty(message = "Required field")
 	private String cpfOrCnpj;
 
-	@NotEmpty(message = "Required field")
 	private Integer type;
 
 	private String street;
